@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Nuevo Producto</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="guardarProducto()">
+    <ion-item>
+      <ion-label position="stacked">Nombre del Producto</ion-label>
+      <ion-input [(ngModel)]="producto.nombre" name="nombre" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Sitio</ion-label>
+      <ion-input [(ngModel)]="producto.sitio" name="sitio" required></ion-input>
+    </ion-item>
+
+    <ion-footer>
+      <ion-button expand="full" type="submit">Guardar</ion-button>
+    </ion-footer>
+  </form>
+</ion-content>
