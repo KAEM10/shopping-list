@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Agregar Producto</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="itemAdded.emit(null)">Cancelar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-label position="floating">Nombre del Producto</ion-label>
+    <ion-input [(ngModel)]="nombre"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="floating">Sitio</ion-label>
+    <ion-input [(ngModel)]="sitio"></ion-input>
+  </ion-item>
+  <ion-button expand="block" (click)="agregarSitio()">Agregar Sitio</ion-button>
+
+  <ion-button expand="block" (click)="agregarProducto()">Guardar Producto</ion-button>
+</ion-content>
