@@ -9,11 +9,13 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicStorageModule } from '@ionic/storage-angular'; // Importa el módulo de Storage
 import { NuevoProductoModalComponent } from './components/nuevo-producto-modal/nuevo-producto-modal.component';
+import { NuevoSitioModalComponent } from './components/nuevo-sitio-modal/nuevo-sitio-modal.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    NuevoProductoModalComponent
+    NuevoProductoModalComponent,
+    NuevoSitioModalComponent
   ],
   imports: [
     BrowserModule,

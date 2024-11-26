@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { NuevoProductoModalComponent } from '../../components/nuevo-producto-modal/nuevo-producto-modal.component';
+import { NuevoSitioModalComponent } from '../../components/nuevo-sitio-modal/nuevo-sitio-modal.component';
 
 export interface Producto {
   id: number;          
@@ -19,6 +20,8 @@ export class HomePage {
     { id: 1, nombre: 'Tomate', sitio: 'Placita campesina', comprado: false },
     { id: 2, nombre: 'Jabón', sitio: 'D1', comprado: false },
   ];
+
+  sitios: string[] = ['Placita campesina', 'D1', 'Éxito', 'Ara'];
 
   constructor(private modalCtrl: ModalController) {}
 
@@ -46,15 +49,41 @@ export class HomePage {
   async abrirModalNuevoProducto() {
     const modal = await this.modalCtrl.create({
       component: NuevoProductoModalComponent,
+      componentProps: {
+        sitios: this.sitios, // Pasar los sitios al modal
+      },
     });
-
-    // Al cerrar el modal, agregar el nuevo producto si se ha proporcionado
+  
+    // Obtener el componente del modal para escuchar el evento
+    const { component } = await modal;
+    if (component instanceof NuevoProductoModalComponent) {
+      component.agregarSitio.subscribe(async () => {
+        await this.abrirModalNuevoSitio();
+      });
+    }
+  
     modal.onDidDismiss().then((data) => {
       if (data.data) {
-        this.productos.push(data.data);
+        this.productos.push(data.data); // Agregar producto a la lista
       }
     });
-
+  
     await modal.present();
   }
+  
+  // Abrir el modal de nuevo sitio
+  async abrirModalNuevoSitio() {
+    const modal = await this.modalCtrl.create({
+      component: NuevoSitioModalComponent,
+    });
+  
+    modal.onDidDismiss().then((data) => {
+      if (data.data) {
+        this.sitios.push(data.data); // Agregar el nuevo sitio a la lista
+      }
+    });
+  
+    await modal.present();
+  }
+  
 }

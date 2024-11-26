@@ -1,3 +1,21 @@
-<p>
-  nuevo-sitio-modal works!
-</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Nuevo Sitio</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="guardarSitio()">
+    <ion-item>
+      <ion-label position="stacked">Nombre del Sitio</ion-label>
+      <ion-input [(ngModel)]="sitio" name="sitio" required></ion-input>
+    </ion-item>
+
+    <ion-footer>
+      <ion-button expand="full" type="submit">Guardar</ion-button>
+    </ion-footer>
+  </form>
+</ion-content>

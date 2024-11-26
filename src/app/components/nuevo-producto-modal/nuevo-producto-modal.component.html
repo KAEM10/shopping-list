@@ -16,8 +16,15 @@
 
     <ion-item>
       <ion-label position="stacked">Sitio</ion-label>
-      <ion-input [(ngModel)]="producto.sitio" name="sitio" required></ion-input>
+      <ion-select [(ngModel)]="producto.sitio" name="sitio" required>
+        <ion-select-option *ngFor="let sitio of sitios" [value]="sitio">{{ sitio }}</ion-select-option>
+      </ion-select>
     </ion-item>
+
+    <!-- Botón para agregar un nuevo sitio -->
+    <ion-button expand="full" color="secondary" (click)="solicitarAgregarSitio()">
+      Agregar nuevo sitio
+    </ion-button>
 
     <ion-footer>
       <ion-button expand="full" type="submit">Guardar</ion-button>
