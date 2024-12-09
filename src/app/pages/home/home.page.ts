@@ -4,10 +4,10 @@ import { NuevoProductoModalComponent } from '../../components/nuevo-producto-mod
 import { NuevoSitioModalComponent } from '../../components/nuevo-sitio-modal/nuevo-sitio-modal.component';
 
 export interface Producto {
-  id: number;          
-  nombre: string;      
-  sitio: string;       
-  comprado: boolean;   
+  id: number;
+  nombre: string;
+  sitio: string;
+  comprado: boolean;
 }
 
 @Component({
@@ -25,65 +25,81 @@ export class HomePage {
 
   constructor(private modalCtrl: ModalController) {}
 
-  // Paso 3: Marcar producto como comprado
-  marcarComprado(producto: Producto) {
-    producto.comprado = true;
-  }
-
-  // Paso 4: Editar producto (en este ejemplo solo se muestra el producto en consola)
-  editarProducto(producto: Producto) {
-    console.log('Editar producto:', producto);
-    // Aquí puedes abrir un modal para editar el producto
-  }
-
-  // Paso 5: Eliminar producto (solo si no está marcado como comprado)
-  eliminarProducto(producto: Producto) {
-    if (!producto.comprado) {
-      this.productos = this.productos.filter((p) => p.id !== producto.id);
-    } else {
-      alert('No puedes eliminar un producto ya comprado');
-    }
-  }
-
-  // Paso 6: Abrir modal para agregar un nuevo producto
+  // Abrir modal de "Nuevo Producto"
   async abrirModalNuevoProducto() {
     const modal = await this.modalCtrl.create({
       component: NuevoProductoModalComponent,
       componentProps: {
-        sitios: this.sitios, // Pasar los sitios al modal
+        sitios: this.sitios,
+        abrirModalNuevoSitio: () => this.abrirModalNuevoSitio(),
       },
     });
-  
-    // Obtener el componente del modal para escuchar el evento
-    const { component } = await modal;
-    if (component instanceof NuevoProductoModalComponent) {
-      component.agregarSitio.subscribe(async () => {
-        await this.abrirModalNuevoSitio();
-      });
-    }
-  
-    modal.onDidDismiss().then((data) => {
-      if (data.data) {
-        this.productos.push(data.data); // Agregar producto a la lista
+
+    // Manejar el cierre del modal de forma segura
+    modal.onDidDismiss().then((result) => {
+      if (result.data) {
+        const producto = result.data as Producto; // Cast seguro a Producto
+        this.productos.push({ ...producto, id: Date.now() }); // Añadir nuevo producto con ID único
+        console.log(`Producto agregado: ${producto.nombre}`);
       }
     });
-  
+
     await modal.present();
   }
-  
-  // Abrir el modal de nuevo sitio
+
+  // Abrir modal de "Nuevo Sitio"
   async abrirModalNuevoSitio() {
     const modal = await this.modalCtrl.create({
       component: NuevoSitioModalComponent,
     });
-  
-    modal.onDidDismiss().then((data) => {
-      if (data.data) {
-        this.sitios.push(data.data); // Agregar el nuevo sitio a la lista
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data) {
+        const nuevoSitio = result.data as string;
+        this.sitios.push(nuevoSitio);
+        console.log(`Nuevo sitio agregado: ${nuevoSitio}`);
       }
     });
-  
+
     await modal.present();
   }
-  
+
+  // Marcar producto como comprado
+  marcarComprado(producto: Producto) {
+    producto.comprado = true;
+  }
+
+  // Editar producto
+  async editarProducto(producto: Producto) {
+    const modal = await this.modalCtrl.create({
+      component: NuevoProductoModalComponent,
+      componentProps: {
+        sitios: this.sitios,
+        producto: { ...producto },
+      },
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data) {
+        const productoEditado = result.data as Producto;
+        const index = this.productos.findIndex((p) => p.id === producto.id);
+        if (index > -1) {
+          this.productos[index] = productoEditado;
+          console.log(`Producto editado: ${productoEditado.nombre}`);
+        }
+      }
+    });
+
+    await modal.present();
+  }
+
+  // Eliminar producto si no está marcado como comprado
+  eliminarProducto(producto: Producto) {
+    if (!producto.comprado) {
+      this.productos = this.productos.filter((p) => p.id !== producto.id);
+      console.log(`Producto eliminado: ${producto.nombre}`);
+    } else {
+      alert('No puedes eliminar un producto que ya ha sido comprado.');
+    }
+  }
 }
