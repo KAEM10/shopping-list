@@ -1,29 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { NuevoProductoModalComponent } from '../../components/nuevo-producto-modal/nuevo-producto-modal.component';
 import { NuevoSitioModalComponent } from '../../components/nuevo-sitio-modal/nuevo-sitio-modal.component';
-
-export interface Producto {
-  id: number;          
-  nombre: string;      
-  sitio: string;       
-  comprado: boolean;   
-}
+import { FirestoreService } from 'src/app/firestore.service';
+import { Producto, ListaCompras } from 'src/app/model/shopping-list.model';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage {
-  productos: Producto[] = [
-    { id: 1, nombre: 'Tomate', sitio: 'Placita campesina', comprado: false },
-    { id: 2, nombre: 'Jabón', sitio: 'D1', comprado: false },
-  ];
+export class HomePage implements OnInit{
 
   sitios: string[] = ['Placita campesina', 'D1', 'Éxito', 'Ara'];
+  productos: any[] = []; // Almacena los productos obtenidos
 
-  constructor(private modalCtrl: ModalController) {}
+  constructor(
+    private modalCtrl: ModalController,
+    private firestoreService: FirestoreService) {}
+
+  ngOnInit(): void {
+    this.cargarProductosDeUltimaLista();
+  }
 
   // Paso 3: Marcar producto como comprado
   marcarComprado(producto: Producto) {
@@ -39,7 +37,7 @@ export class HomePage {
   // Paso 5: Eliminar producto (solo si no está marcado como comprado)
   eliminarProducto(producto: Producto) {
     if (!producto.comprado) {
-      this.productos = this.productos.filter((p) => p.id !== producto.id);
+      //this.productos = this.productos.filter((p) => p.id !== producto.id);
     } else {
       alert('No puedes eliminar un producto ya comprado');
     }
@@ -84,6 +82,22 @@ export class HomePage {
     });
   
     await modal.present();
+  }
+
+  async cargarProductosDeUltimaLista() {
+    try {
+      const ultimaLista = await this.firestoreService.obtenerProductosDeListaMasReciente();
+      
+      if (ultimaLista) {
+        console.log("Productos de la última lista:", ultimaLista);
+        this.productos = ultimaLista;
+      } else {
+        console.log("No hay listas disponibles.");
+      }
+    } catch (error) {
+      console.error("Error cargando productos de la última lista: ", error);
+      throw error;
+    }
   }
   
 }
