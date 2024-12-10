@@ -6,7 +6,6 @@ const routes: Routes = [
   { path: '',
     redirectTo: 'login',
     pathMatch: 'full' 
-
   },
   { path: 'login',
     loadChildren: () => import('./pages/login/login.module').then(m => m.LoginPageModule) 
@@ -24,6 +23,10 @@ const routes: Routes = [
   { path: 'settings',
     loadChildren: () => import('./pages/settings/settings.module').then(m => m.SettingsPageModule),
     canActivate: [autenticationGuard] 
+  },
+  {
+    path: 'register',
+    loadChildren: () => import('./pages/register/register.module').then( m => m.RegisterPageModule)
   }
 ];
 
