@@ -65,45 +65,46 @@ export class FirestoreService {
     }  
   }
 
-  async agregarProductoALista(idLista: string, producto: Producto) {
+  async agregarOActualizarProducto(idLista: string, producto: Producto) {
     try {
       // Referencia al documento de la lista
       const listaRef = doc(this.db, 'listacompras', idLista);
-      
-      // Verificar si la lista existe
+  
+      // Verificar si la lista existe, si no, crearla
       const listaDoc = await getDoc(listaRef);
-      
-      // Si la lista no existe, crearla
       if (!listaDoc.exists()) {
         await setDoc(listaRef, {
           fechaRegistro: new Date()
         });
-        
         console.log('Lista creada automáticamente');
       }
   
-      // Referencia a la subcolección de elementos de la lista
-      const productosRef = collection(
-        this.db, 
-        `listacompras/${idLista}/elementoslista`
-      );
-      
-      // Agregar el producto
-      const docRef = await addDoc(productosRef, producto);
-
-      // Actualizar el campo 'id' con el id generado automáticamente
-      await updateDoc(docRef, {
-        id: docRef.id  // Guardamos el id generado en el campo 'id' del documento
-      });
-      
-      console.log("Producto agregado con id: " + docRef.id);
-      
-      return docRef.id;
+      // Si el producto ya tiene un id, actualizamos el documento existente
+      if (producto.id && producto.id.length > 0) {
+        const productoRef = doc(this.db, `listacompras/${idLista}/elementoslista/${producto.id}`);
+        await updateDoc(productoRef, { ...producto });
+        console.log(`Producto con ID ${producto.id} actualizado.`);
+        return producto.id;
+      } 
+      // Si no tiene id, lo creamos como nuevo documento
+      else {
+        const productosRef = collection(this.db, `listacompras/${idLista}/elementoslista`);
+        const docRef = await addDoc(productosRef, producto);
+  
+        // Guardar el id generado automáticamente en el mismo documento
+        await updateDoc(docRef, {
+          id: docRef.id
+        });
+  
+        console.log(`Producto agregado con nuevo ID: ${docRef.id}`);
+        return docRef.id;
+      }
     } catch (error) {
-      console.error("Error agregando producto: ", error);
+      console.error("Error al agregar o actualizar el producto: ", error);
       throw error;
     }
   }
+  
 
   async agregarSitio(sitio: Sitio) {
     try {

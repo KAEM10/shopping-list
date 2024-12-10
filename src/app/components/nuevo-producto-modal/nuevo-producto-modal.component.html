@@ -11,12 +11,12 @@
   <form (ngSubmit)="guardarProducto()">
     <ion-item>
       <ion-label position="stacked">Nombre del Producto</ion-label>
-      <ion-input [(ngModel)]="producto.nombre" name="nombre" required></ion-input>
+      <ion-input [(ngModel)]="newProducto.nombre" name="nombre" required></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label position="stacked">Sitio</ion-label>
-      <ion-select [(ngModel)]="producto.sitio" name="sitio" required>
+      <ion-select [(ngModel)]="newProducto.sitio" name="sitio" required>
         <ion-select-option *ngFor="let sitio of sitios" [value]="sitio.nombre">{{ sitio.nombre }}</ion-select-option>
       </ion-select>
     </ion-item>

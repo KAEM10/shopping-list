@@ -21,7 +21,7 @@ export class HomePage implements OnInit {
 
   ngOnInit(): void {
     this.cargarProductosDeUltimaLista();
-    this.cargarSitios();
+    this.cargarSitios(); 
   }
 
   // Abrir modal de "Nuevo Producto"
@@ -117,14 +117,15 @@ export class HomePage implements OnInit {
       componentProps: {
         sitios: this.sitios,
         producto: { ...producto },
-      },
+        type: "edit"
+      }
     });
 
     modal.onDidDismiss().then((result) => {
       if (result.data) {
         const productoEditado = result.data as Producto;
         //TODO: realizar acciones aquí
-        const index = this.productos.findIndex((p) => p.id === producto);
+        const index = this.productos.findIndex((p) => p.id === producto.id);
         if (index > -1) {
           this.productos[index] = productoEditado;
           console.log(`Producto editado: ${productoEditado.nombre}`);

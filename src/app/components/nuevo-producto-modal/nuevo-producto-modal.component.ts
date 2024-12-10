@@ -10,11 +10,19 @@ import { Producto, ListaCompras } from 'src/app/model/shopping-list.model';
 })
 export class NuevoProductoModalComponent implements OnInit{
   @Input() sitios: any[] = []; // Lista de sitios recibida desde HomePage
+  @Input() producto: any;
+  @Input() type: string = "";
   @Output() agregarSitio = new EventEmitter<void>(); // Evento para solicitar agregar un sitio
 
-  producto = { id: 0, nombre: '', sitio: '', comprado: false };
+  newProducto = { id: 0, nombre: '', sitio: '', comprado: false };
 
-  ngOnInit() {}
+  ngOnInit() {
+    if(this.producto && this.producto.nombre && this.producto.sitio) {
+      this.newProducto.nombre = this.producto.nombre;
+      this.newProducto.sitio = this.producto.sitio;
+      this.newProducto.id = this.producto.id;
+    }
+  }
 
   constructor(
     private modalCtrl: ModalController,
@@ -25,23 +33,36 @@ export class NuevoProductoModalComponent implements OnInit{
   }
 
   async guardarProducto() {
-    if (this.producto.nombre && this.producto.sitio) {
+    if (this.newProducto.nombre && this.newProducto.sitio) {
       
       try {
-        const nuevoProducto: Producto = {
-          nombre: this.producto.nombre,
-          comprado: false,
-          idSitio: this.producto.sitio,
-          idLista: "Primera lista",
-          id: ""
-        };
+        if (this.producto && this.producto.id) {
+          const nuevoProducto: Producto = {
+            nombre: this.newProducto.nombre,
+            comprado: this.producto.comprado,
+            idSitio: this.newProducto.sitio,
+            idLista: this.producto.idLista,
+            id: this.producto.id
+          };
+
+          await this.firestoreService.agregarOActualizarProducto("primeralista", nuevoProducto);
+        } else {
+
+          const nuevoProducto: Producto = {
+            nombre: this.newProducto.nombre,
+            comprado: false,
+            idSitio: this.newProducto.sitio,
+            idLista: "Primera lista",
+            id: ""
+          };
+          await this.firestoreService.agregarOActualizarProducto("primeralista", nuevoProducto);
+        }
         
-        await this.firestoreService.agregarProductoALista("primeralista", nuevoProducto);
       } catch (error) {
         console.error("Error al agregar producto", error);
       }
 
-      this.modalCtrl.dismiss(this.producto);
+      this.modalCtrl.dismiss(this.newProducto);
     } else {
       alert('Por favor completa todos los campos.');
     }
