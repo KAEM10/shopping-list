@@ -1,4 +1,5 @@
 export interface Producto {
+    id: string;
     nombre: string;
     comprado: boolean;
     idSitio: string;
@@ -6,11 +7,13 @@ export interface Producto {
 }
   
 export interface ListaCompras {
+    id?: string;
     fechaRegistro: Date;
     productos: Producto[];
 }
 
 export interface Sitio {
+    id?: string;
     nombre: string;
     fechaRegistro: Date;
 }

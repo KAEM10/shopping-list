@@ -32,7 +32,8 @@ export class NuevoProductoModalComponent implements OnInit{
           nombre: this.producto.nombre,
           comprado: false,
           idSitio: this.producto.sitio,
-          idLista: "Primera lista"
+          idLista: "Primera lista",
+          id: ""
         };
         
         await this.firestoreService.agregarProductoALista("primeralista", nuevoProducto);

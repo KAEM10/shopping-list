@@ -107,6 +107,7 @@ export class HomePage implements OnInit {
   // Marcar producto como comprado
   marcarComprado(producto: Producto) {
     producto.comprado = true;
+    this.firestoreService.actualizarProductoAComprado("primeralista", producto.id)
   }
 
   // Editar producto
@@ -135,9 +136,11 @@ export class HomePage implements OnInit {
   }
 
   // Eliminar producto si no está marcado como comprado
-  eliminarProducto(producto: Producto) {
+  async eliminarProducto(producto: Producto) {
     if (!producto.comprado) {
-      //this.productos = this.productos.filter((p) => p.id !== producto.id);
+      this.productos = this.productos.filter((p) => p.id !== producto.id);
+      await this.firestoreService.borrarProductoDeLista("primeralista", producto.id);
+      
       console.log(`Producto eliminado: ${producto.nombre}`);
     } else {
       alert('No puedes eliminar un producto que ya ha sido comprado.');

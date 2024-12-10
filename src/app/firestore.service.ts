@@ -5,6 +5,8 @@ import {
   collection, 
   doc,
   getDocs,
+  updateDoc,
+  deleteDoc,
   query,
   where,
   addDoc,
@@ -87,9 +89,11 @@ export class FirestoreService {
       );
       
       // Agregar el producto
-      const docRef = await addDoc(productosRef, {
-        nombre: producto.nombre,
-        idSitio: producto.idSitio,
+      const docRef = await addDoc(productosRef, producto);
+
+      // Actualizar el campo 'id' con el id generado automáticamente
+      await updateDoc(docRef, {
+        id: docRef.id  // Guardamos el id generado en el campo 'id' del documento
       });
       
       console.log("Producto agregado con id: " + docRef.id);
@@ -105,6 +109,11 @@ export class FirestoreService {
     try {
       const coleccionRef = collection(this.db, "sitios");
       const docRef = await addDoc(coleccionRef, sitio);
+
+      await updateDoc(docRef, {
+        id: docRef.id
+      });
+  
       console.log("Documento agregado con ID:", docRef.id);
 
       return docRef.id;
@@ -138,4 +147,50 @@ export class FirestoreService {
       throw error;
     } 
   }
+
+  async actualizarProductoAComprado(idLista: string, idProducto: string) {
+    try {
+      // Referencia al documento del producto en la subcolección 'elementoslista'
+      const productoRef = doc(this.db, `listacompras/${idLista}/elementoslista`, idProducto);
+      
+      // Verificar si el producto existe
+      const productoDoc = await getDoc(productoRef);
+      if (!productoDoc.exists()) {
+        console.log("El producto no existe");
+        return;
+      }
+  
+      // Actualizar el campo 'comprado' a true o false según el valor pasado
+      await updateDoc(productoRef, {
+        comprado: true
+      });
+  
+    } catch (error) {
+      console.error("Error actualizando el estado del producto", error);
+      throw error;
+    }
+  }
+
+  async borrarProductoDeLista(idLista: string, idProducto: string) {
+    try {
+      // Referencia al documento del producto en la subcolección 'elementoslista'
+      const productoRef = doc(this.db, `listacompras/${idLista}/elementoslista`, idProducto);
+      
+      // Verificar si el producto existe antes de eliminarlo (opcional)
+      const productoDoc = await getDoc(productoRef);
+      if (!productoDoc.exists()) {
+        console.log("El producto no existe. No se puede eliminar.");
+        return false; // Devuelve false si el producto no existe
+      }
+  
+      // Eliminar el documento del producto
+      await deleteDoc(productoRef);
+      console.log(`Producto con ID ${idProducto} eliminado correctamente.`);
+      return true; // Devuelve true si la eliminación fue exitosa
+    } catch (error) {
+      console.error("Error al eliminar el producto: ", error);
+      throw error;
+    }
+  }
 }
+
