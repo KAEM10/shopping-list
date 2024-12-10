@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Crear Nueva Lista</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-label position="stacked">Nombre de la Lista</ion-label>
+    <ion-input [(ngModel)]="nombreLista" placeholder="Escribe el nombre de la lista" required></ion-input>
+  </ion-item>
+
+  <ion-button expand="full" (click)="aceptar()">Aceptar</ion-button>
+</ion-content>

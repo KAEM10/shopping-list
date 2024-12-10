@@ -64,8 +64,59 @@ export class FirestoreService {
       throw error;
     }  
   }
+  // Método para obtener productos de una lista específica
+  async obtenerProductosDeLista(idLista: string) {
+    try {
+      // Referencia a la colección 'listacompras'
+      const listasRef = collection(this.db, 'listacompras');
+      
+      // Crea una consulta para buscar una lista con el id especificado
+      const listaQuery = query(listasRef, where('idLista', '==', "'primeralista'"));
+      const querySnapshot = await getDocs(listaQuery);
   
+      if (!querySnapshot.empty) {
+        const listaDoc = querySnapshot.docs[0]; // Obtén el primer documento con ese idLista
+        const idListaDoc = listaDoc.id; // El ID del documento de la lista encontrada
+    
+        // Referencia a la subcolección 'elementoslista' dentro de la lista específica
+        const productosRef = collection(this.db, `listacompras/${idListaDoc}/elementoslista`);
+    
+        // Obtén los documentos de la subcolección
+        const productosSnapshot = await getDocs(productosRef);
+        const productos: Producto[] = [];
+    
+        productosSnapshot.forEach((documento: any) => {
+          productos.push({
+            ...documento.data() as Producto,
+          });
+        });
+    
+        console.log("Productos de la lista con idLista:", productos);
+        return productos;
+      } else {
+        console.log("No se encontró ninguna lista con el id proporcionado.");
+        return [];
+      }
+    } catch (error) {
+      console.error("Error obteniendo productos de la lista con idLista: ", error);
+      throw error;
+    }  
+  }
+  async agregarLista(nuevaLista: string) {
+    try {
+      // Referencia a la colección "listacompras"
+      const listaRef = doc(collection(this.db, "listacompras"), nuevaLista);
   
+      // Agregar un documento con datos personalizados
+      await setDoc(listaRef, {
+        fechaRegistro: new Date().toLocaleString(), // Fecha actual
+      });
+  
+      console.log(`Lista '${nuevaLista}' agregada correctamente.`);
+    } catch (error) {
+      console.error("Error al agregar la lista:", error);
+    }
+  }
   async obtenerProductosDeTodasLasListas() {
     try {
       // Referencia a la colección 'listacompras'
