@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
+import { FirebaseauthService } from 'src/app/firebaseauth.service';
 
 @Component({
   selector: 'app-login',
@@ -9,25 +10,36 @@ import { MenuController } from '@ionic/angular';
 })
 export class LoginPage implements OnInit {
 
-  email: string = '';
+  username: string = '';
   password: string = '';
 
   constructor(
     private router: Router,
-    private menuCtrl: MenuController) { }
+    private menuCtrl: MenuController,
+    private firebaseAuthService: FirebaseauthService) { }
 
   ngOnInit() {
   }
 
-  iniciarSesion() {
+  async iniciarSesion() {
     // Aquí puedes integrar tu lógica de autenticación (por ejemplo, Firebase)
-    if (this.email === 'demo@demo.com' && this.password === '123456') {
+    if (this.username && this.password) {
       // Simular autenticación exitosa
-      localStorage.setItem('loggedIn', 'true');
-      this.router.navigate(['/home']); // Navegar a la página principal
+      const userCredential = await this.firebaseAuthService.iniciarSesion(this.username, this.password);
+      if (userCredential && userCredential.user?.email){
+        localStorage.setItem('loggedIn', 'true');
+        this.router.navigate(['/home']); // Navegar a la página principal
+      } else {
+        alert("Inicio de sesión incorrecto");
+      }
+      
     } else {
       alert('Credenciales incorrectas');
     }
+  }
+
+  async registrarse() {
+    this.router.navigate(["/register"]);
   }
 
   ionViewWillEnter() {
