@@ -3,9 +3,13 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: 'home', loadChildren: () => import('./pages/home/home.module').then(m => m.HomePageModule) }
+  { path: 'home', loadChildren: () => import('./pages/home/home.module').then(m => m.HomePageModule) },
+  {
+    path: 'addshoppinglist',
+    loadChildren: () => import('./pages/addshoppinglist/addshoppinglist.module').then( m => m.AddshoppinglistPageModule)
+  },
+  { path: 'settings', loadChildren: () => import('./pages/settings/settings.module').then(m => m.SettingsPageModule) }
 ];
-
 
 @NgModule({
   imports: [
