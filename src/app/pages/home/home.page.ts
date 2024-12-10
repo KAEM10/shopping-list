@@ -12,7 +12,7 @@ import { Producto, ListaCompras } from 'src/app/model/shopping-list.model';
 })
 export class HomePage implements OnInit{
 
-  sitios: string[] = ['Placita campesina', 'D1', 'Éxito', 'Ara'];
+  sitios: any[] = [];
   productos: any[] = []; // Almacena los productos obtenidos
 
   constructor(
@@ -21,6 +21,7 @@ export class HomePage implements OnInit{
 
   ngOnInit(): void {
     this.cargarProductosDeUltimaLista();
+    this.cargarSitios();
   }
 
   // Paso 3: Marcar producto como comprado
@@ -52,18 +53,18 @@ export class HomePage implements OnInit{
       },
     });
   
-    // Obtener el componente del modal para escuchar el evento
-    const { component } = await modal;
-    if (component instanceof NuevoProductoModalComponent) {
-      component.agregarSitio.subscribe(async () => {
-        await this.abrirModalNuevoSitio();
-      });
-    }
-  
-    modal.onDidDismiss().then((data) => {
+    modal.onDidDismiss().then(async (data) => {
       if (data.data) {
-        this.productos.push(data.data); // Agregar producto a la lista
+        if (data.data.action === 'agregarSitio') {
+          // Abre el modal para agregar un sitio
+          console.log("Abriendo el modal para agregar un sitio.");
+          await this.abrirModalNuevoSitio();
+        } else if (data.data.action === 'guardarProducto') {
+          // Agregar el producto a la lista
+          this.productos.push(data.data.producto);
+        }
       }
+
     });
   
     await modal.present();
@@ -71,17 +72,30 @@ export class HomePage implements OnInit{
   
   // Abrir el modal de nuevo sitio
   async abrirModalNuevoSitio() {
+    console.log("Abriendo el agregar sitio 2");
     const modal = await this.modalCtrl.create({
       component: NuevoSitioModalComponent,
     });
-  
-    modal.onDidDismiss().then((data) => {
-      if (data.data) {
-        this.sitios.push(data.data); // Agregar el nuevo sitio a la lista
-      }
-    });
+    console.log("Abriendo el agregar sitio MOdal present");
   
     await modal.present();
+  }
+
+  async cargarSitios() {
+    try {
+
+      const sitios = await this.firestoreService.obtenerSitios();
+      if (sitios) {
+        console.log("Sitios obtenidos: "+sitios);
+        this.sitios = sitios;
+      } else {
+        console.log("No hay listas disponibles.");
+      }
+
+    } catch (error) {
+      console.error("Error cargando productos de la última lista: ", error);
+      throw error;
+    }
   }
 
   async cargarProductosDeUltimaLista() {

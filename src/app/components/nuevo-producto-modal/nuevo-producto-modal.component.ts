@@ -9,7 +9,7 @@ import { Producto, ListaCompras } from 'src/app/model/shopping-list.model';
   styleUrls: ['./nuevo-producto-modal.component.scss'],
 })
 export class NuevoProductoModalComponent implements OnInit{
-  @Input() sitios: string[] = []; // Lista de sitios recibida desde HomePage
+  @Input() sitios: any[] = []; // Lista de sitios recibida desde HomePage
   @Output() agregarSitio = new EventEmitter<void>(); // Evento para solicitar agregar un sitio
 
   producto = { id: 0, nombre: '', sitio: '', comprado: false };
@@ -48,6 +48,9 @@ export class NuevoProductoModalComponent implements OnInit{
 
   // Emitir el evento para abrir el modal de Nuevo Sitio
   solicitarAgregarSitio() {
-    this.agregarSitio.emit();
+    console.log("Abriendo el agregar sitio en NUEVOPROD");
+    this.modalCtrl.dismiss({
+      action: 'agregarSitio', // Indica que se desea agregar un sitio
+    });
   }
 }

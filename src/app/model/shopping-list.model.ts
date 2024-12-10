@@ -9,3 +9,8 @@ export interface ListaCompras {
     fechaRegistro: Date;
     productos: Producto[];
 }
+
+export interface Sitio {
+    nombre: string;
+    fechaRegistro: Date;
+}

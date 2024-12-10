@@ -14,7 +14,7 @@ import {
   limit
 } from 'firebase/firestore';
 import { environment } from '../environments/environment';
-import { ListaCompras, Producto } from './model/shopping-list.model';
+import { ListaCompras, Producto, Sitio } from './model/shopping-list.model';
 
 
 @Injectable({
@@ -101,4 +101,41 @@ export class FirestoreService {
     }
   }
 
+  async agregarSitio(sitio: Sitio) {
+    try {
+      const coleccionRef = collection(this.db, "sitios");
+      const docRef = await addDoc(coleccionRef, sitio);
+      console.log("Documento agregado con ID:", docRef.id);
+
+      return docRef.id;
+    } catch (error) {
+      console.error("Error agregando documento:", error);
+      throw error;
+    }
+  }
+
+  async obtenerSitios() {
+    try {
+      const sitiosRef = collection(this.db, 'sitios');
+      const sitiosSnap = await getDocs(sitiosRef);
+
+      if (!sitiosSnap.empty) {
+        const sitios: Sitio[] = [];
+        
+        sitiosSnap.forEach((documento) => {
+          sitios.push({
+            ...documento.data() as Sitio,
+          });
+        });
+  
+        console.log("Sitios lista:", sitios);
+        return sitios;
+      } else {
+        return [];
+      }
+    } catch (error) {
+      console.error("Error obteniendo la lista: ", error);
+      throw error;
+    } 
+  }
 }

@@ -17,7 +17,7 @@
     <ion-item>
       <ion-label position="stacked">Sitio</ion-label>
       <ion-select [(ngModel)]="producto.sitio" name="sitio" required>
-        <ion-select-option *ngFor="let sitio of sitios" [value]="sitio">{{ sitio }}</ion-select-option>
+        <ion-select-option *ngFor="let sitio of sitios" [value]="sitio.nombre">{{ sitio.nombre }}</ion-select-option>
       </ion-select>
     </ion-item>
 
