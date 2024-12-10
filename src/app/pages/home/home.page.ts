@@ -17,7 +17,8 @@ export class HomePage implements OnInit {
 
   constructor(
     private modalCtrl: ModalController,
-    private firestoreService: FirestoreService
+    private firestoreService: FirestoreService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
