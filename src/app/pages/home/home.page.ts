@@ -53,16 +53,18 @@ export class HomePage implements OnInit{
       },
     });
   
-    modal.onDidDismiss().then(async (data) => {
-      if (data.data) {
-        if (data.data.action === 'agregarSitio') {
+    modal.onDidDismiss().then(async (result) => {
+      if (result.data) {
+        if (result.data.action === 'agregarSitio') {
           // Abre el modal para agregar un sitio
           console.log("Abriendo el modal para agregar un sitio.");
           await this.abrirModalNuevoSitio();
-        } else if (data.data.action === 'guardarProducto') {
-          // Agregar el producto a la lista
-          this.productos.push(data.data.producto);
+        } else {
+          const producto = result.data as Producto; // Cast seguro a Producto
+          this.productos.push(producto); // Añadir nuevo producto con ID único
+          console.log(`Producto agregado: ${producto.nombre}`);
         }
+
       }
 
     });
@@ -77,6 +79,14 @@ export class HomePage implements OnInit{
       component: NuevoSitioModalComponent,
     });
     console.log("Abriendo el agregar sitio MOdal present");
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data) {
+        const nuevoSitio = result.data as string;
+        this.sitios.push(nuevoSitio);
+        console.log(`Nuevo sitio agregado: ${nuevoSitio}`);
+      }
+    });
   
     await modal.present();
   }
