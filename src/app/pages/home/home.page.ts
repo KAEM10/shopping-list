@@ -11,17 +11,17 @@ import { Producto, ListaCompras } from 'src/app/model/shopping-list.model';
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
-
   sitios: any[] = [];
   productos: any[] = []; // Almacena los productos obtenidos
 
   constructor(
     private modalCtrl: ModalController,
-    private firestoreService: FirestoreService) {}
+    private firestoreService: FirestoreService
+  ) {}
 
   ngOnInit(): void {
     this.cargarProductosDeUltimaLista();
-    this.cargarSitios(); 
+    this.cargarSitios();
   }
 
   // Abrir modal de "Nuevo Producto"
@@ -33,21 +33,19 @@ export class HomePage implements OnInit {
         abrirModalNuevoSitio: () => this.abrirModalNuevoSitio(),
       },
     });
-  
+
     modal.onDidDismiss().then(async (result) => {
       if (result.data) {
         if (result.data.action === 'agregarSitio') {
           // Abre el modal para agregar un sitio
-          console.log("Abriendo el modal para agregar un sitio.");
+          console.log('Abriendo el modal para agregar un sitio.');
           await this.abrirModalNuevoSitio();
         } else {
           const producto = result.data as Producto; // Cast seguro a Producto
           this.productos.push(producto); // Añadir nuevo producto con ID único
           console.log(`Producto agregado: ${producto.nombre}`);
         }
-
       }
-
     });
 
     await modal.present();
@@ -55,7 +53,7 @@ export class HomePage implements OnInit {
 
   // Abrir modal de "Nuevo Sitio"
   async abrirModalNuevoSitio() {
-    console.log("Abriendo el agregar sitio 2");
+    console.log('Abriendo el agregar sitio 2');
     const modal = await this.modalCtrl.create({
       component: NuevoSitioModalComponent,
     });
@@ -73,41 +71,67 @@ export class HomePage implements OnInit {
 
   async cargarSitios() {
     try {
-
       const sitios = await this.firestoreService.obtenerSitios();
       if (sitios) {
-        console.log("Sitios obtenidos: "+sitios);
+        console.log('Sitios obtenidos: ' + sitios);
         this.sitios = sitios;
       } else {
-        console.log("No hay listas disponibles.");
+        console.log('No hay listas disponibles.');
       }
-
     } catch (error) {
-      console.error("Error cargando productos de la última lista: ", error);
+      console.error('Error cargando productos de la última lista: ', error);
       throw error;
     }
   }
 
   async cargarProductosDeUltimaLista() {
     try {
-      const ultimaLista = await this.firestoreService.obtenerProductosDeListaMasReciente();
-      
+      const ultimaLista =
+        await this.firestoreService.obtenerProductosDeListaMasReciente();
+
       if (ultimaLista) {
-        console.log("Productos de la última lista:", ultimaLista);
+        console.log('Productos de la última lista:', ultimaLista);
         this.productos = ultimaLista;
       } else {
-        console.log("No hay listas disponibles.");
+        console.log('No hay listas disponibles.');
       }
     } catch (error) {
-      console.error("Error cargando productos de la última lista: ", error);
+      console.error('Error cargando productos de la última lista: ', error);
       throw error;
     }
   }
-  
+
+  //método para activar el doble click
+
+  ultimoClick: number = 0;
+
+  detectarDobleClick(producto: any) {
+    const ahora = Date.now();
+    const tiempoEntreClicks = ahora - this.ultimoClick;
+
+    if (tiempoEntreClicks < 300) {
+      // Se detectó un doble clic
+      this.marcarComprado(producto);
+    }
+
+    this.ultimoClick = ahora;
+  }
+
   // Marcar producto como comprado
   marcarComprado(producto: Producto) {
-    producto.comprado = true;
-    this.firestoreService.actualizarProductoAComprado("primeralista", producto.id)
+    producto.comprado = !producto.comprado; // Alterna el estado
+    this.firestoreService
+      .actualizarProductoAComprado('primeralista', producto.id)
+      .then(() => {
+        console.log(
+          `Producto ${producto.nombre} ${
+            producto.comprado ? 'marcado como comprado' : 'desmarcado'
+          }.`
+        );
+      })
+      .catch((error) => {
+        console.error('Error al actualizar el producto:', error);
+      });
   }
 
   // Editar producto
@@ -117,8 +141,8 @@ export class HomePage implements OnInit {
       componentProps: {
         sitios: this.sitios,
         producto: { ...producto },
-        type: "edit"
-      }
+        type: 'edit',
+      },
     });
 
     modal.onDidDismiss().then((result) => {
@@ -140,8 +164,11 @@ export class HomePage implements OnInit {
   async eliminarProducto(producto: Producto) {
     if (!producto.comprado) {
       this.productos = this.productos.filter((p) => p.id !== producto.id);
-      await this.firestoreService.borrarProductoDeLista("primeralista", producto.id);
-      
+      await this.firestoreService.borrarProductoDeLista(
+        'primeralista',
+        producto.id
+      );
+
       console.log(`Producto eliminado: ${producto.nombre}`);
     } else {
       alert('No puedes eliminar un producto que ya ha sido comprado.');
