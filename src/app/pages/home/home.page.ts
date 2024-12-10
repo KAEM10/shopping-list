@@ -160,7 +160,6 @@ export class HomePage implements OnInit {
     await modal.present();
   }
 
-  // Eliminar producto si no está marcado como comprado
   async eliminarProducto(producto: Producto) {
     if (!producto.comprado) {
       this.productos = this.productos.filter((p) => p.id !== producto.id);
@@ -168,10 +167,27 @@ export class HomePage implements OnInit {
         'primeralista',
         producto.id
       );
-
       console.log(`Producto eliminado: ${producto.nombre}`);
     } else {
       alert('No puedes eliminar un producto que ya ha sido comprado.');
     }
+  }
+
+  async manejarSwipe(slidingItem: any, producto: Producto) {
+    // Verifica si el swipe fue hacia el lado "start" (derecha)
+    const options = await slidingItem.getOpenAmount();
+
+    if (options < 0) {
+      // Swipe hacia la derecha
+      console.log('Swipe completo hacia la derecha detectado.');
+      await this.eliminarProducto(producto);
+    } else {
+      console.log(
+        'Swipe completo hacia la izquierda detectado. No se elimina el producto.'
+      );
+    }
+
+    // Cierra el elemento deslizable
+    slidingItem.close();
   }
 }

@@ -7,7 +7,7 @@
 <ion-content>
   <!-- Lista de compras -->
   <ion-list>
-    <ion-item-sliding *ngFor="let producto of productos">
+    <ion-item-sliding #slidingItem *ngFor="let producto of productos" (ionSwipe)="manejarSwipe(slidingItem, producto)">
       <ion-item (click)="detectarDobleClick(producto)" [class.seleccionado]="producto.comprado">
         <ion-label>
           <h2>{{ producto.nombre }}</h2>
@@ -15,10 +15,15 @@
         </ion-label>
       </ion-item>
 
-      <ion-item-options>
+      <!-- Opciones para swipe hacia la derecha -->
+      <ion-item-options side="start">
+        <ion-item-option color="danger" (click)="eliminarProducto(producto)">❌</ion-item-option>
+      </ion-item-options>
+
+      <!-- Opciones para swipe hacia la izquierda -->
+      <ion-item-options side="end">
         <ion-item-option color="success" (click)="marcarComprado(producto)">✔</ion-item-option>
         <ion-item-option color="primary" (click)="editarProducto(producto)">✏️</ion-item-option>
-        <ion-item-option color="danger" (click)="eliminarProducto(producto)">❌</ion-item-option>
       </ion-item-options>
     </ion-item-sliding>
   </ion-list>
