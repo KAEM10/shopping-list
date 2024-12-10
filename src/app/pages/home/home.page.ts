@@ -10,7 +10,7 @@ import { Producto, ListaCompras } from 'src/app/model/shopping-list.model';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage implements OnInit{
+export class HomePage implements OnInit {
 
   sitios: any[] = [];
   productos: any[] = []; // Almacena los productos obtenidos
@@ -24,32 +24,13 @@ export class HomePage implements OnInit{
     this.cargarSitios();
   }
 
-  // Paso 3: Marcar producto como comprado
-  marcarComprado(producto: Producto) {
-    producto.comprado = true;
-  }
-
-  // Paso 4: Editar producto (en este ejemplo solo se muestra el producto en consola)
-  editarProducto(producto: Producto) {
-    console.log('Editar producto:', producto);
-    // Aquí puedes abrir un modal para editar el producto
-  }
-
-  // Paso 5: Eliminar producto (solo si no está marcado como comprado)
-  eliminarProducto(producto: Producto) {
-    if (!producto.comprado) {
-      //this.productos = this.productos.filter((p) => p.id !== producto.id);
-    } else {
-      alert('No puedes eliminar un producto ya comprado');
-    }
-  }
-
-  // Paso 6: Abrir modal para agregar un nuevo producto
+  // Abrir modal de "Nuevo Producto"
   async abrirModalNuevoProducto() {
     const modal = await this.modalCtrl.create({
       component: NuevoProductoModalComponent,
       componentProps: {
-        sitios: this.sitios, // Pasar los sitios al modal
+        sitios: this.sitios,
+        abrirModalNuevoSitio: () => this.abrirModalNuevoSitio(),
       },
     });
   
@@ -68,17 +49,16 @@ export class HomePage implements OnInit{
       }
 
     });
-  
+
     await modal.present();
   }
-  
-  // Abrir el modal de nuevo sitio
+
+  // Abrir modal de "Nuevo Sitio"
   async abrirModalNuevoSitio() {
     console.log("Abriendo el agregar sitio 2");
     const modal = await this.modalCtrl.create({
       component: NuevoSitioModalComponent,
     });
-    console.log("Abriendo el agregar sitio MOdal present");
 
     modal.onDidDismiss().then((result) => {
       if (result.data) {
@@ -87,7 +67,7 @@ export class HomePage implements OnInit{
         console.log(`Nuevo sitio agregado: ${nuevoSitio}`);
       }
     });
-  
+
     await modal.present();
   }
 
@@ -124,4 +104,43 @@ export class HomePage implements OnInit{
     }
   }
   
+  // Marcar producto como comprado
+  marcarComprado(producto: Producto) {
+    producto.comprado = true;
+  }
+
+  // Editar producto
+  async editarProducto(producto: Producto) {
+    const modal = await this.modalCtrl.create({
+      component: NuevoProductoModalComponent,
+      componentProps: {
+        sitios: this.sitios,
+        producto: { ...producto },
+      },
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data) {
+        const productoEditado = result.data as Producto;
+        //TODO: realizar acciones aquí
+        const index = this.productos.findIndex((p) => p.id === producto);
+        if (index > -1) {
+          this.productos[index] = productoEditado;
+          console.log(`Producto editado: ${productoEditado.nombre}`);
+        }
+      }
+    });
+
+    await modal.present();
+  }
+
+  // Eliminar producto si no está marcado como comprado
+  eliminarProducto(producto: Producto) {
+    if (!producto.comprado) {
+      //this.productos = this.productos.filter((p) => p.id !== producto.id);
+      console.log(`Producto eliminado: ${producto.nombre}`);
+    } else {
+      alert('No puedes eliminar un producto que ya ha sido comprado.');
+    }
+  }
 }
