@@ -47,7 +47,7 @@ export class FirestoreService {
         const productosSnapshot = await getDocs(productosRef);
         const productos: Producto[] = [];
   
-        productosSnapshot.forEach((documento) => {
+        productosSnapshot.forEach((documento:any) => {
           productos.push({
             ...documento.data() as Producto,
           });
@@ -64,7 +64,51 @@ export class FirestoreService {
       throw error;
     }  
   }
-
+  
+  
+  async obtenerProductosDeTodasLasListas() {
+    try {
+      // Referencia a la colección 'listacompras'
+      const listasRef = collection(this.db, 'listacompras');
+  
+      // Obtén todas las listas sin filtros
+      const querySnapshot = await getDocs(listasRef);
+  
+      if (!querySnapshot.empty) {
+        const todasLasListas: { idLista: string; productos: Producto[] }[] = [];
+  
+        for (const listaDoc of querySnapshot.docs) {
+          const idLista = listaDoc.id;
+  
+          // Referencia a la subcolección 'elementoslista' dentro de cada lista
+          const productosRef = collection(this.db, `listacompras/${idLista}/elementoslista`);
+  
+          // Obtén los documentos de la subcolección
+          const productosSnapshot = await getDocs(productosRef);
+          const productos: Producto[] = [];
+  
+          productosSnapshot.forEach((documento: any) => {
+            productos.push({
+              ...documento.data() as Producto,
+            });
+          });
+  
+          // Guarda la lista con sus productos
+          todasLasListas.push({ idLista, productos });
+        }
+  
+        console.log("Productos de todas las listas:", todasLasListas);
+        return todasLasListas;
+      } else {
+        console.log("No se encontraron listas.");
+        return [];
+      }
+    } catch (error) {
+      console.error("Error obteniendo productos de todas las listas: ", error);
+      throw error;
+    }
+  }
+  
   async agregarOActualizarProducto(idLista: string, producto: Producto) {
     try {
       // Referencia al documento de la lista
@@ -132,7 +176,7 @@ export class FirestoreService {
       if (!sitiosSnap.empty) {
         const sitios: Sitio[] = [];
         
-        sitiosSnap.forEach((documento) => {
+        sitiosSnap.forEach((documento:any) => {
           sitios.push({
             ...documento.data() as Sitio,
           });

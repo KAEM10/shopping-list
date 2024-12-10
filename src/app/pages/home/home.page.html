@@ -4,7 +4,11 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Lista de compras</ion-title>
+    <ion-title>Lista de compras 
+      <span *ngIf="nombreLista!=='' ">
+        : {{nombreLista}}
+
+      </span></ion-title>
   </ion-toolbar>
 </ion-header>
 

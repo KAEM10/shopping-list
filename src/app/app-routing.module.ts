@@ -8,7 +8,12 @@ const routes: Routes = [
     path: 'addshoppinglist',
     loadChildren: () => import('./pages/addshoppinglist/addshoppinglist.module').then( m => m.AddshoppinglistPageModule)
   },
-  { path: 'settings', loadChildren: () => import('./pages/settings/settings.module').then(m => m.SettingsPageModule) }
+  { path: 'settings', loadChildren: () => import('./pages/settings/settings.module').then(m => m.SettingsPageModule) },
+  {
+    path: 'lists',
+    loadChildren: () => import('./pages/lists/lists.module').then( m => m.ListsPageModule)
+  },
+  { path: 'home/:idLista', loadChildren: () => import('./pages/home/home.module').then(m => m.HomePageModule) } // Nueva ruta con parámetro
 ];
 
 @NgModule({
