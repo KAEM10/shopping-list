@@ -7,6 +7,7 @@
     <ion-title>Configuración</ion-title>
   </ion-toolbar>
 </ion-header>
+<ion-progress-bar type="indeterminate" *ngIf="ejecutando"></ion-progress-bar>
 
 <!-- Header secundario -->
 <ion-header [translucent]="true">
@@ -31,7 +32,7 @@
           <p class="item-description">Total Items: {{ lista.productos.length }}</p>
         </ion-label>
         <!-- Icono de duplicar -->
-        <ion-icon name="duplicate-outline" slot="end" style="margin-right:5px ;"></ion-icon>
+        <ion-icon name="duplicate-outline" slot="end" style="margin-right:5px ;" (click)="duplicar(lista.idLista)"></ion-icon>
 
         <!-- Icono de chevron (desplazado) -->
         <ion-icon name="chevron-forward-outline" (click)="navigateToHome(lista.idLista, lista['productos'])"

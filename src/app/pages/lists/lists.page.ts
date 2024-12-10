@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular';
 import { NuevaListaModalComponent } from 'src/app/components/nueva-lista-modal/nueva-lista-modal.component';
 import { FirestoreService } from 'src/app/firestore.service';
 
@@ -16,9 +16,10 @@ export class ListsPage implements OnInit {
       productos: [{}, {}, {}], // Ejemplo
     },
   ];
+  ejecutando:boolean=false;
   listado: any[] = []; // Almacena los productos obtenidos
 
-  constructor(private router: Router,
+  constructor(private router: Router,private toastController: ToastController,
     private firestoreService: FirestoreService,
     private modalController: ModalController) { }
 
@@ -37,7 +38,7 @@ export class ListsPage implements OnInit {
     });
 
     modal.onDidDismiss().then((resultado:any) => {
-      console.log("SSS"+JSON.stringify(resultado));
+      console.log("result:"+JSON.stringify(resultado));
       if (resultado.data) {
         const nombreLista = resultado.data;
         console.log('Nueva lista creada:', nombreLista);
@@ -48,9 +49,10 @@ export class ListsPage implements OnInit {
     return await modal.present();
   }
   async cargarListas() {
+    this.ejecutando=true;
     try {
       const ultimaLista = await this.firestoreService.obtenerProductosDeTodasLasListas();
-      
+      this.ejecutando=false;
       if (ultimaLista) {
         console.log("Listado:", ultimaLista);
         this.listado = ultimaLista;
@@ -58,8 +60,42 @@ export class ListsPage implements OnInit {
         console.log("No hay listas disponibles.");
       }
     } catch (error) {
+      this.ejecutando=false;
       console.error("Error cargando productos de la últim lista: ", error);
       throw error;
     }
+  }
+  async duplicar(nombreOriginal:string){
+    this.ejecutando=true;
+     if (nombreOriginal.trim()) {
+      let nombreCopia=nombreOriginal+"-COPIANN";
+      try {
+        await this.firestoreService.duplicarLista(nombreOriginal,nombreCopia);
+        this.ejecutando=false;
+        await this.mostrarToast('Lista Copiada con éxito', 'success');
+
+        await this.esperar(300); // Espera  segundos
+        window.location.reload();
+      } catch (error) {
+        this.ejecutando=false;
+        console.error("Error al copiar Lista", error);
+      }
+      
+    } 
+  }
+  async mostrarToast(mensaje: string, color: 'success' | 'danger' | 'warning') {
+    const toast = await this.toastController.create({
+      message: mensaje,
+      duration: 3000, // Duración en milisegundos
+      position: 'top', // Posición del toast
+      color: color, // Color del toast
+    });
+
+    // Mostrar el toast
+    await toast.present();
+  }
+  // Método para esperar un tiempo específico (en milisegundos)
+  esperar(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }

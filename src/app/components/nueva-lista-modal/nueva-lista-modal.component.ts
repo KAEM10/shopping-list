@@ -34,7 +34,7 @@ export class NuevaListaModalComponent {
         await this.esperar(300); // Espera  segundos
         window.location.reload();
       } catch (error) {
-        console.error("Error al agregar producto", error);
+        console.error("Error al crear Lista", error);
       }
       this.listaCreada.emit(this.nombreLista); // Emite el nombre de la nueva lista
       this.modalController.dismiss(); // Cierra el modal
