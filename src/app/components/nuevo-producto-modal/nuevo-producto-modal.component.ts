@@ -11,7 +11,6 @@ import { Producto, ListaCompras } from 'src/app/model/shopping-list.model';
 export class NuevoProductoModalComponent implements OnInit{
   @Input() sitios: any[] = []; // Lista de sitios recibida desde HomePage
   @Input() producto: any;
-  @Input() type: string = "";
   @Output() agregarSitio = new EventEmitter<void>(); // Evento para solicitar agregar un sitio
 
   newProducto = { id: 0, nombre: '', sitio: '', comprado: false };

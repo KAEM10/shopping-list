@@ -1,3 +1,22 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <ion-menu side="start" menuId="firstMenu" contentId="main-content">
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Menú</ion-title>
+      </ion-toolbar>
+    </ion-header>
+  
+    <ion-content>
+      <ion-list>
+        <ion-item routerLink="/home">Mi lista</ion-item>
+        <ion-item routerLink="/addshoppinglist">Nueva lista</ion-item>
+        <ion-item routerLink="/settings">Configuración</ion-item>
+        <!-- Opción para cerrar sesión -->
+        <ion-item (click)="cerrarSesion()">Cerrar sesión</ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+  
+  <!-- Contenido principal -->
+  <ion-router-outlet id="main-content"></ion-router-outlet>
 </ion-app>

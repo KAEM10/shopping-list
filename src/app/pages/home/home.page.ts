@@ -3,12 +3,13 @@ import { ModalController } from '@ionic/angular';
 import { NuevoProductoModalComponent } from '../../components/nuevo-producto-modal/nuevo-producto-modal.component';
 import { NuevoSitioModalComponent } from '../../components/nuevo-sitio-modal/nuevo-sitio-modal.component';
 import { FirestoreService } from 'src/app/firestore.service';
-import { Producto, ListaCompras } from 'src/app/model/shopping-list.model';
+import { Producto } from 'src/app/model/shopping-list.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
-  styleUrls: ['./home.page.scss'],
+  styleUrls: ['./home.page.scss']
 })
 export class HomePage implements OnInit {
   sitios: any[] = [];
@@ -22,6 +23,10 @@ export class HomePage implements OnInit {
   ngOnInit(): void {
     this.cargarProductosDeUltimaLista();
     this.cargarSitios();
+  }
+
+  navegar(ruta: string) {
+    this.router.navigate([ruta]);
   }
 
   // Abrir modal de "Nuevo Producto"
