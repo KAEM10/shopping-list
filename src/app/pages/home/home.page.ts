@@ -9,7 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
-  styleUrls: ['./home.page.scss'],
+  styleUrls: ['./home.page.scss']
 })
 export class HomePage implements OnInit {
   nombreLista:string="";
@@ -139,8 +139,7 @@ export class HomePage implements OnInit {
       component: NuevoProductoModalComponent,
       componentProps: {
         sitios: this.sitios,
-        producto: { ...producto },
-        type: "edit"
+        producto: { ...producto }
       }
     });
 
