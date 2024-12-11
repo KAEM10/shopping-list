@@ -1,0 +1,54 @@
+<!-- Header principal -->
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Configuración</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-progress-bar type="indeterminate" *ngIf="ejecutando"></ion-progress-bar>
+
+<!-- Header secundario -->
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Todas las listas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <!-- Lista de compras -->
+  <ion-list>
+    <ion-item-sliding *ngFor="let lista of listado">
+      <ion-item lines="full">
+        <ion-avatar slot="start">
+          <img src="https://tse1.mm.bing.net/th?id=OIP.HCaa9osINVHxBslxD0_OwgHaHa&pid=Api&P=0&h=180"
+            alt="Icono de lista">
+        </ion-avatar>
+
+        <ion-label>
+          <h2>{{ lista.idLista }}</h2>
+          <p class="item-description">Total Items: {{ lista.productos.length }}</p>
+        </ion-label>
+        <!-- Icono de duplicar -->
+        <ion-icon name="duplicate-outline" slot="end" style="margin-right:5px ;" (click)="duplicar(lista.idLista)"></ion-icon>
+
+        <!-- Icono de chevron (desplazado) -->
+        <ion-icon name="chevron-forward-outline" (click)="navigateToHome(lista.idLista, lista['productos'])"
+          slot="end"></ion-icon>
+      </ion-item>
+
+      <!-- Puedes agregar un fondo de color o sombra en hover-->
+      <!-- <ion-item class="custom-item" (click)="navigateToHome(lista.idLista, lista['productos'])">
+        <ion-label>
+          <h2>{{ lista.idLista }}</h2>
+          <p>Total Items: {{ lista.productos.length }}</p>
+        </ion-label>
+      </ion-item> -->
+    </ion-item-sliding>
+  </ion-list>
+</ion-content>
+<ion-button expand="full" color="primary" (click)="abrirModal()">
+  Agregar Nueva Lista
+</ion-button>

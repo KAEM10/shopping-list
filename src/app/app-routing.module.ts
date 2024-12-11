@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { autenticationGuard } from './autentication.guard'; // Importa tu guard
 
 const routes: Routes = [
   { path: '',
@@ -13,21 +12,21 @@ const routes: Routes = [
   },
   { path: 'home',
     loadChildren: () => import('./pages/home/home.module').then(m => m.HomePageModule),
-    canActivate: [autenticationGuard]
   },
   {
     path: 'addshoppinglist',
     loadChildren: () => import('./pages/addshoppinglist/addshoppinglist.module').then( m => m.AddshoppinglistPageModule),
-    canActivate: [autenticationGuard]
-  },
-  { path: 'settings',
-    loadChildren: () => import('./pages/settings/settings.module').then(m => m.SettingsPageModule),
-    canActivate: [autenticationGuard] 
   },
   {
     path: 'register',
     loadChildren: () => import('./pages/register/register.module').then( m => m.RegisterPageModule)
-  }
+  },
+  { path: 'settings', loadChildren: () => import('./pages/settings/settings.module').then(m => m.SettingsPageModule) },
+  {
+    path: 'lists',
+    loadChildren: () => import('./pages/lists/lists.module').then( m => m.ListsPageModule)
+  },
+  { path: 'home/:idLista', loadChildren: () => import('./pages/home/home.module').then(m => m.HomePageModule) } // Nueva ruta con parámetro
 ];
 
 @NgModule({
