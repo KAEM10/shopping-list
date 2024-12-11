@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { SettingsPageRoutingModule } from './settings-routing.module';
 
 import { SettingsPage } from './settings.page';
+import { ListsPageModule } from '../lists/lists.module';
 
 @NgModule({
   imports: [
