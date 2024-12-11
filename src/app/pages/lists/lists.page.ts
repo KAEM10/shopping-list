@@ -75,24 +75,7 @@ export class ListsPage implements OnInit {
 
     await modal.present();
   }
-  /* async duplicar2(nombreOriginal:string){
-    this.ejecutando=true;
-     if (nombreOriginal.trim()) {
-      let nombreCopia="asas";
-      try {
-        await this.firestoreService.duplicarLista(nombreOriginal,nombreCopia);
-        this.ejecutando=false;
-        await this.mostrarToast('Lista Copiada con éxito', 'success');
-
-        await this.esperar(300); // Espera  segundos
-        window.location.reload();
-      } catch (error) {
-        this.ejecutando=false;
-        console.error("Error al copiar Lista", error);
-      }
-      
-    } 
-  } */
+  
   async mostrarToast(mensaje: string, color: 'success' | 'danger' | 'warning') {
     const toast = await this.toastController.create({
       message: mensaje,

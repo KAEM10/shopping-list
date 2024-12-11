@@ -13,7 +13,8 @@ import {
   setDoc,
   getDoc,
   orderBy,
-  limit
+  limit,
+  Timestamp
 } from 'firebase/firestore';
 import { environment } from '../environments/environment';
 import { ListaCompras, Producto, Sitio } from './model/shopping-list.model';
@@ -106,8 +107,10 @@ export class FirestoreService {
       throw error;
     }
   }
+
   async agregarLista(nuevaLista: string) {
     try {
+      this.idLastList = nuevaLista;
       // Referencia a la colección "listacompras"
       const listaRef = doc(collection(this.db, "listacompras"), nuevaLista);
 
@@ -121,9 +124,12 @@ export class FirestoreService {
       console.error("Error al agregar la lista:", error);
     }
   }
+
   async duplicarLista(nombreListaOrigen: string, nombreListaDestino: string) {
     try {
       // Referencia a la colección origen
+      this.idLastList = nombreListaDestino;
+
       const origenRef = collection(this.db, `listacompras/${nombreListaOrigen}/elementoslista`);
       const destinoRef = collection(this.db, `listacompras/${nombreListaDestino}/elementoslista`);
   
@@ -162,44 +168,46 @@ export class FirestoreService {
   
   async obtenerProductosDeTodasLasListas() {
     try {
+
       // Referencia a la colección 'listacompras'
       const listasRef = collection(this.db, 'listacompras');
-  
-      // Obtén todas las listas sin filtros
-      const querySnapshot = await getDocs(listasRef);
-  
+
+      // Ordena por 'fechaRegistro' en orden descendente y limita el resultado a 1
+      const ultimaListaQuery = query(listasRef, orderBy('fechaRegistro', 'desc'));
+      const querySnapshot = await getDocs(ultimaListaQuery);
+
       if (!querySnapshot.empty) {
         const todasLasListas: { idLista: string; productos: Producto[] }[] = [];
-  
+
         for (const listaDoc of querySnapshot.docs) {
           const idLista = listaDoc.id;
-  
-          // Referencia a la subcolección 'elementoslista' dentro de cada lista
+
+          console.log(`El id de la lista es: ${idLista}`);
+          this.idLastList = idLista;
+
+          // Referencia a la subcolección 'elementoslista' dentro de la lista específica
           const productosRef = collection(this.db, `listacompras/${idLista}/elementoslista`);
-  
-          // Crea una consulta ordenando por 'fechaRegistro'
-          const productosQuery = query(productosRef, orderBy('fechaRegistro', 'desc')); // Usa 'desc' para orden descendente
-  
-          // Obtén los documentos de la subcolección aplicando la consulta
-          const productosSnapshot = await getDocs(productosQuery);
+
+          // Obtén los documentos de la subcolección
+          const productosSnapshot = await getDocs(productosRef);
           const productos: Producto[] = [];
-  
+
           productosSnapshot.forEach((documento: any) => {
             productos.push({
               ...documento.data() as Producto,
             });
           });
-  
-          // Guarda la lista con sus productos ordenados
+
           todasLasListas.push({ idLista, productos });
-        }
-  
-        console.log('Productos de todas las listas ordenados:', todasLasListas);
+        }        
+
+        console.log("Productos de la última lista:", todasLasListas);
         return todasLasListas;
       } else {
-        console.log('No se encontraron listas.');
+        console.log("No se encontraron listas.");
         return [];
       }
+
     } catch (error) {
       console.error('Error obteniendo productos de todas las listas: ', error);
       throw error;
@@ -207,26 +215,45 @@ export class FirestoreService {
   }
 
   async agregarProductoAListaMasNueva(producto: Producto) {
-
     try {
-      producto.idLista = this.idLastList;
-      
-      const productosRef = collection(this.db, `listacompras/${this.idLastList}/elementoslista`);
-      const docRef = await addDoc(productosRef, producto);
-
-      // Guardar el id generado automáticamente en el mismo documento
-      await updateDoc(docRef, {
-        id: docRef.id
-      });
-
-      console.log(`Producto agregado con nuevo ID: ${docRef.id}`);
-
-      return docRef.id;
+      let idLista = this.idLastList;
+  
+      if (!idLista) {
+        // Generar un ID personalizado para la nueva lista
+        const idPersonalizado = "mi_primera_lista"; // Puedes personalizar este formato
+        const nuevaListaRef = doc(this.db, `listacompras/${idPersonalizado}`);
+        idLista = idPersonalizado;
+  
+        // Crear la lista con el ID personalizado
+        await setDoc(nuevaListaRef, {
+          fechaRegistro: new Date() // Asigna fechaRegistro
+        });
+  
+        console.log(`Lista creada con ID personalizado: ${idLista}`);
+        this.idLastList = idLista; // Actualizar referencia de la última lista
+      }
+  
+      // Validar o asignar un ID para el producto
+      if (!producto.id || producto.id.trim() === "") {
+        producto.id = `producto_${new Date().getTime()}`; // Generar ID personalizado para el producto
+      }
+  
+      // Asociar el producto con la lista existente o recién creada
+      producto.idLista = idLista;
+  
+      // Agregar el producto a la subcolección de la lista
+      const productosRef = collection(this.db, `listacompras/${idLista}/elementoslista`);
+      const productoRef = doc(productosRef, producto.id); // ID personalizado para el producto
+      await setDoc(productoRef, producto);
+  
+      console.log(`Producto agregado con ID personalizado: ${producto.id}`);
+      return producto.id;
+  
     } catch (error) {
       console.error("Error al agregar o actualizar el producto: ", error);
       throw error;
     }
-  }
+  }  
 
   async actualizarProducto(producto: Producto) {
     try {
@@ -242,7 +269,6 @@ export class FirestoreService {
       throw error;
     }
   }
-
 
   async agregarSitio(sitio: Sitio) {
     try {
