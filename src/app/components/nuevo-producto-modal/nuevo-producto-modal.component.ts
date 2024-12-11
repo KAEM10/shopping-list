@@ -46,6 +46,7 @@ export class NuevoProductoModalComponent implements OnInit{
           };
 
           await this.firestoreService.actualizarProducto(nuevoProducto);
+          this.modalCtrl.dismiss(nuevoProducto);
         } else {
           console.log("Se está AGREGANDO un producto...");
           const nuevoProducto: Producto = {
@@ -56,6 +57,7 @@ export class NuevoProductoModalComponent implements OnInit{
             id: ""
           };
           await this.firestoreService.agregarProductoAListaMasNueva(nuevoProducto);
+          this.modalCtrl.dismiss(nuevoProducto);
         }
         
       } catch (error) {
