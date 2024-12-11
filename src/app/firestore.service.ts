@@ -113,6 +113,7 @@ export class FirestoreService {
 
       // Agregar un documento con datos personalizados
       await setDoc(listaRef, {
+        
         fechaRegistro: new Date(), // Fecha actual
       });
 
@@ -178,7 +179,7 @@ export class FirestoreService {
           const productosRef = collection(this.db, `listacompras/${idLista}/elementoslista`);
   
           // Crea una consulta ordenando por 'fechaRegistro'
-          const productosQuery = query(productosRef, orderBy('fechaRegistro', 'desc')); // Usa 'desc' para orden descendente
+          const productosQuery = query(productosRef); // Usa 'desc' para orden descendente
   
           // Obtén los documentos de la subcolección aplicando la consulta
           const productosSnapshot = await getDocs(productosQuery);

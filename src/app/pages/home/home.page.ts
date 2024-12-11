@@ -15,6 +15,7 @@ export class HomePage implements OnInit {
   nombreLista:string="";
   sitios: any[] = [];
   productos: any[] = []; // Almacena los productos obtenidos
+  permitirAniadir:boolean=true;
 
   constructor(
     private modalCtrl: ModalController,
@@ -29,11 +30,11 @@ export class HomePage implements OnInit {
     const idLista = this.route.snapshot.paramMap.get('idLista');  // Obtén el parámetro de la URL
 
     if (idLista) {      
+      this.permitirAniadir=false;
       this.cargarProductosDeUnaLista(idLista);
       this.cargarSitios()
     } else {
       // Si no hay parámetro ultima
-      console.log("No, ",idLista)
       this.cargarProductosDeUltimaLista();
       this.cargarSitios();
     }; 
