@@ -11,12 +11,14 @@ import { IonicStorageModule } from '@ionic/storage-angular'; // Importa el módu
 import { NuevoProductoModalComponent } from './components/nuevo-producto-modal/nuevo-producto-modal.component';
 import { NuevoSitioModalComponent } from './components/nuevo-sitio-modal/nuevo-sitio-modal.component';
 import { NuevaListaModalComponent } from './components/nueva-lista-modal/nueva-lista-modal.component';
+import { RenombrarCopiaModalComponent } from './components/renombrar-copia-modal/renombrar-copia-modal.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NuevoProductoModalComponent,
     NuevaListaModalComponent,
+    RenombrarCopiaModalComponent,
     NuevoSitioModalComponent
   ],
   imports: [

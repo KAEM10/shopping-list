@@ -1,16 +1,18 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ModalController, ToastController } from '@ionic/angular';
 import { FirestoreService } from 'src/app/firestore.service';
 
 @Component({
-  selector: 'app-nueva-lista-modal',
-  templateUrl: './nueva-lista-modal.component.html',
-  styleUrls: ['./nueva-lista-modal.component.scss'],
+  selector: 'app-renombrar-copia-modal',
+  templateUrl: './renombrar-copia-modal.component.html',
+  styleUrls: ['./renombrar-copia-modal.component.scss'],
 })
-export class NuevaListaModalComponent {
+export class RenombrarCopiaModalComponent  {
 
-  ejecutando:boolean=false;
+  @Input() nombreOriginal!: string; // Recibir nombreOriginal desde el padre
   nombreLista: string = '';
+  ejecutando:boolean=false;//bandera
+
 
   @Output() listaCreada: EventEmitter<string> = new EventEmitter();
 
@@ -28,19 +30,19 @@ export class NuevaListaModalComponent {
   async aceptar() {
     this.ejecutando=true;
     if (this.nombreLista.trim()) {
+      let nombreCopia=this.nombreLista;
       try {
-        await this.firestoreService.agregarLista(this.nombreLista.trim());
-        await this.mostrarToast('Lista creada con éxito', 'success');
+        await this.firestoreService.duplicarLista(this.nombreOriginal,nombreCopia);
+       
+        await this.mostrarToast('Lista Copiada con éxito', 'success');
 
         await this.esperar(300); // Espera  segundos
         this.ejecutando=false;
         window.location.reload();
       } catch (error) {
-        console.error("Error al crear Lista", error);
+        console.error("Error al copiar Lista", error);
         this.ejecutando=false;
       }
-      this.listaCreada.emit(this.nombreLista); // Emite el nombre de la nueva lista
-      this.modalController.dismiss(); // Cierra el modal
     } else {
       alert('Por favor ingrese un nombre para la lista.');
     }
@@ -60,4 +62,5 @@ export class NuevaListaModalComponent {
   esperar(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
 }

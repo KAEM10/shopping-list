@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController, ToastController } from '@ionic/angular';
 import { NuevaListaModalComponent } from 'src/app/components/nueva-lista-modal/nueva-lista-modal.component';
+import { RenombrarCopiaModalComponent } from 'src/app/components/renombrar-copia-modal/renombrar-copia-modal.component';
 import { FirestoreService } from 'src/app/firestore.service';
 
 @Component({
@@ -65,10 +66,20 @@ export class ListsPage implements OnInit {
       throw error;
     }
   }
-  async duplicar(nombreOriginal:string){
+  async duplicar(nombreOriginal: string) {
+    const modal = await this.modalController.create({
+      component: RenombrarCopiaModalComponent,
+      componentProps: {
+        nombreOriginal: nombreOriginal, // Pasar el valor al modal
+      },
+    });
+
+    await modal.present();
+  }
+  /* async duplicar2(nombreOriginal:string){
     this.ejecutando=true;
      if (nombreOriginal.trim()) {
-      let nombreCopia=nombreOriginal+"-COPIANN";
+      let nombreCopia="asas";
       try {
         await this.firestoreService.duplicarLista(nombreOriginal,nombreCopia);
         this.ejecutando=false;
@@ -82,7 +93,7 @@ export class ListsPage implements OnInit {
       }
       
     } 
-  }
+  } */
   async mostrarToast(mensaje: string, color: 'success' | 'danger' | 'warning') {
     const toast = await this.toastController.create({
       message: mensaje,
