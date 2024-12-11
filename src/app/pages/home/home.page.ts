@@ -16,7 +16,7 @@ export class HomePage implements OnInit {
   sitios: any[] = [];
   productos: any[] = []; // Almacena los productos obtenidos
   permitirAniadir:boolean=true;
-
+  porParametro:boolean=false;
   constructor(
     private modalCtrl: ModalController,
     private firestoreService: FirestoreService,
@@ -32,6 +32,7 @@ export class HomePage implements OnInit {
     const idLista = this.route.snapshot.paramMap.get('idLista');  // Obtén el parámetro de la URL
 
     if (idLista) {      
+      this.porParametro=true;
       this.permitirAniadir=false;
       this.cargarProductosDeUnaLista(idLista);
       this.cargarSitios()
@@ -108,9 +109,10 @@ export class HomePage implements OnInit {
 
   async cargarProductosDeUltimaLista() {
     try {
-      const ultimaLista =
+      const resultado  =
         await this.firestoreService.obtenerProductosDeListaMasReciente();
-
+        const ultimaLista=resultado.productos;
+        this.nombreLista=resultado.nombreLista??"";
       if (ultimaLista) {
         console.log('Productos de la última lista:', ultimaLista);
         this.productos = ultimaLista;
@@ -151,7 +153,7 @@ export class HomePage implements OnInit {
   marcarComprado(producto: Producto) {
     producto.comprado = !producto.comprado; // Alterna el estado
     this.firestoreService
-      .actualizarProductoAComprado('primeralista', producto.id)
+      .actualizarProductoAComprado(this.obtenerNombreDecodificado(), producto.id)
       .then(() => {
         console.log(
           `Producto ${producto.nombre} ${
@@ -194,7 +196,7 @@ export class HomePage implements OnInit {
     if (!producto.comprado) {
       this.productos = this.productos.filter((p) => p.id !== producto.id);
       await this.firestoreService.borrarProductoDeLista(
-        'primeralista',
+        this.nombreLista,
         producto.id
       );
       console.log(`Producto eliminado: ${producto.nombre}`);

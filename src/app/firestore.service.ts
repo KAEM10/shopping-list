@@ -32,42 +32,49 @@ export class FirestoreService {
     try {
       // Referencia a la colección 'listacompras'
       const listasRef = collection(this.db, 'listacompras');
-
+  
       // Ordena por 'fechaRegistro' en orden descendente y limita el resultado a 1
       const ultimaListaQuery = query(listasRef, orderBy('fechaRegistro', 'desc'), limit(1));
       const querySnapshot = await getDocs(ultimaListaQuery);
-
+  
       if (!querySnapshot.empty) {
         const listaDoc = querySnapshot.docs[0]; // Obtén el primer (y único) documento
         const idLista = listaDoc.id;
-
-        console.log(`El id de la lista es: ${idLista}`);
+        const listaData = listaDoc.data(); // Obtén los datos del documento
+        const nombreLista = listaDoc.id || 'Lista sin nombre'; // Acceso con notación de índice
+  
+        console.log(`El ID de la lista más reciente es: ${idLista}`);
+        console.log(`El nombre de la lista más reciente es: ${nombreLista}`);
         this.idLastList = idLista;
-
+  
         // Referencia a la subcolección 'elementoslista' dentro de la lista específica
         const productosRef = collection(this.db, `listacompras/${idLista}/elementoslista`);
-
+  
         // Obtén los documentos de la subcolección
         const productosSnapshot = await getDocs(productosRef);
         const productos: Producto[] = [];
-
+  
         productosSnapshot.forEach((documento: any) => {
           productos.push({
             ...documento.data() as Producto,
           });
         });
-
+  
         console.log("Productos de la última lista:", productos);
-        return productos;
+  
+        // Retorna tanto el nombre de la lista como los productos
+        return { nombreLista, productos };
       } else {
         console.log("No se encontraron listas.");
-        return [];
+        return { nombreLista: null, productos: [] };
       }
     } catch (error) {
       console.error("Error obteniendo productos de la lista más reciente: ", error);
       throw error;
     }
   }
+  
+  
   // Método para obtener productos de una lista específica
   async obtenerProductosDeLista(idLista: string) {
     try {
@@ -296,7 +303,7 @@ export class FirestoreService {
       // Verificar si el producto existe
       const productoDoc = await getDoc(productoRef);
       if (!productoDoc.exists()) {
-        console.log("El producto no existe");
+        console.log("El producto "+idProducto +" no existe en la lista "+idLista);
         return;
       }
 
