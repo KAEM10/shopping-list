@@ -12,14 +12,20 @@ export class NuevoProductoModalComponent implements OnInit{
   @Input() sitios: any[] = []; // Lista de sitios recibida desde HomePage
   @Input() producto: any;
   @Output() agregarSitio = new EventEmitter<void>(); // Evento para solicitar agregar un sitio
-
+  isEdicion:boolean=false;
   newProducto = { id: 0, nombre: '', sitio: '', comprado: false };
 
   ngOnInit() {
-    if(this.producto && this.producto.nombre && this.producto.sitio) {
+    console.log(this.producto);
+    
+    if(this.producto && this.producto.nombre && this.producto.idSitio) {
+      this.isEdicion=true;
       this.newProducto.nombre = this.producto.nombre;
-      this.newProducto.sitio = this.producto.sitio;
+      this.newProducto.sitio = this.producto.idSitio;
       this.newProducto.id = this.producto.id;
+    }else{
+
+      this.isEdicion=false;
     }
   }
 

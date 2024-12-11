@@ -1,6 +1,7 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Nuevo Producto</ion-title>
+    <ion-title *ngIf="!isEdicion">Nuevo Producto</ion-title>
+    <ion-title *ngIf="isEdicion">Editar Producto</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="cerrarModal()">Cerrar</ion-button>
     </ion-buttons>
