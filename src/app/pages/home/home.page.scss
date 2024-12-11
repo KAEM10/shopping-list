@@ -2,3 +2,8 @@ ion-item.seleccionado {
   background-color: #d4edda;
   border: 1px solid #28a745; /* Borde */
 }
+ion-header {
+  --background: #3b5998; /* Color de fondo del encabezado */
+  --color: #fff;         /* Color del texto */
+}
+

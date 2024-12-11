@@ -24,7 +24,9 @@ export class HomePage implements OnInit {
     private route: ActivatedRoute,
     private router: Router) {}
 
-  
+    obtenerNombreDecodificado(): string {
+      return decodeURIComponent(this.nombreLista);
+    }
 
   ngOnInit(): void {
     const idLista = this.route.snapshot.paramMap.get('idLista');  // Obtén el parámetro de la URL

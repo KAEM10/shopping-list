@@ -6,13 +6,22 @@
     </ion-buttons>
     <ion-title>Lista de compras 
       <span *ngIf="nombreLista!=='' ">
-        : {{nombreLista}}
-
+        : {{ obtenerNombreDecodificado() }}
       </span></ion-title>
   </ion-toolbar>
 </ion-header>
 
+<!-- Header secundario -->
+<ion-header [translucent]="true" *ngIf="nombreLista!=='' ">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/lists"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ obtenerNombreDecodificado() }}</ion-title>
+  </ion-toolbar>
+</ion-header>
 <ion-content>
+
   <!-- Lista de compras -->
   <ion-list>
     <ion-item-sliding #slidingItem *ngFor="let producto of productos" (ionSwipe)="manejarSwipe(slidingItem, producto)">
