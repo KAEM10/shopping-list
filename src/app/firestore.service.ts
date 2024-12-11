@@ -295,11 +295,11 @@ export class FirestoreService {
     }
   }
 
-  async actualizarProductoAComprado(idLista: string, idProducto: string) {
+  async actualizarProductoAComprado(idLista: string, idProducto: string,estado:boolean) {
     try {
       // Referencia al documento del producto en la subcolección 'elementoslista'
       const productoRef = doc(this.db, `listacompras/${idLista}/elementoslista`, idProducto);
-
+      //alert(estado)
       // Verificar si el producto existe
       const productoDoc = await getDoc(productoRef);
       if (!productoDoc.exists()) {
@@ -309,7 +309,7 @@ export class FirestoreService {
 
       // Actualizar el campo 'comprado' a true o false según el valor pasado
       await updateDoc(productoRef, {
-        comprado: true
+        comprado: estado
       });
 
     } catch (error) {

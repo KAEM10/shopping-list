@@ -153,7 +153,7 @@ export class HomePage implements OnInit {
   marcarComprado(producto: Producto) {
     producto.comprado = !producto.comprado; // Alterna el estado
     this.firestoreService
-      .actualizarProductoAComprado(this.obtenerNombreDecodificado(), producto.id)
+      .actualizarProductoAComprado(this.nombreLista, producto.id, producto.comprado)
       .then(() => {
         console.log(
           `Producto ${producto.nombre} ${
