@@ -14,10 +14,6 @@ const routes: Routes = [
     loadChildren: () => import('./pages/home/home.module').then(m => m.HomePageModule),
   },
   {
-    path: 'addshoppinglist',
-    loadChildren: () => import('./pages/addshoppinglist/addshoppinglist.module').then( m => m.AddshoppinglistPageModule),
-  },
-  {
     path: 'register',
     loadChildren: () => import('./pages/register/register.module').then( m => m.RegisterPageModule)
   },

@@ -36,25 +36,26 @@ export class NuevoProductoModalComponent implements OnInit{
       
       try {
         if (this.producto && this.producto.id) {
+          console.log("Se está EDITANDO un producto...");
           const nuevoProducto: Producto = {
             nombre: this.newProducto.nombre,
             comprado: this.producto.comprado,
-            idSitio: this.newProducto.sitio,
+            idSitio: this.newProducto.sitio,  
             idLista: this.producto.idLista,
             id: this.producto.id
           };
 
-          await this.firestoreService.agregarOActualizarProducto("primeralista", nuevoProducto);
+          await this.firestoreService.actualizarProducto(nuevoProducto);
         } else {
-
+          console.log("Se está AGREGANDO un producto...");
           const nuevoProducto: Producto = {
             nombre: this.newProducto.nombre,
             comprado: false,
             idSitio: this.newProducto.sitio,
-            idLista: "Primera lista",
+            idLista: "",
             id: ""
           };
-          await this.firestoreService.agregarOActualizarProducto("primeralista", nuevoProducto);
+          await this.firestoreService.agregarProductoAListaMasNueva(nuevoProducto);
         }
         
       } catch (error) {

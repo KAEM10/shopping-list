@@ -11,12 +11,7 @@ import { FirestoreService } from 'src/app/firestore.service';
   styleUrls: ['./lists.page.scss'],
 })
 export class ListsPage implements OnInit {
-  listadoEnvio = [
-    {
-      idLista: 'primeralista',
-      productos: [{}, {}, {}], // Ejemplo
-    },
-  ];
+
   ejecutando:boolean=false;
   listado: any[] = []; // Almacena los productos obtenidos
 
@@ -30,9 +25,11 @@ export class ListsPage implements OnInit {
     this.cargarListas();
     
   }
+
   navigateToHome(idLista: string, productos: any[]) {
     this.router.navigate(['/home', idLista], { state: { productos } });
   }
+
   async abrirModal() {
     const modal = await this.modalController.create({
       component: NuevaListaModalComponent,
@@ -49,6 +46,7 @@ export class ListsPage implements OnInit {
 
     return await modal.present();
   }
+
   async cargarListas() {
     this.ejecutando=true;
     try {
@@ -66,6 +64,7 @@ export class ListsPage implements OnInit {
       throw error;
     }
   }
+
   async duplicar(nombreOriginal: string) {
     const modal = await this.modalController.create({
       component: RenombrarCopiaModalComponent,

@@ -25,6 +25,7 @@ import { ListaCompras, Producto, Sitio } from './model/shopping-list.model';
 export class FirestoreService {
   private app = initializeApp(environment.firebaseConfig);
   private db = getFirestore(this.app);
+  private idLastList: string = "";
 
   // Método para obtener productos de una lista específica
   async obtenerProductosDeListaMasReciente() {
@@ -39,6 +40,9 @@ export class FirestoreService {
       if (!querySnapshot.empty) {
         const listaDoc = querySnapshot.docs[0]; // Obtén el primer (y único) documento
         const idLista = listaDoc.id;
+
+        console.log(`El id de la lista es: ${idLista}`);
+        this.idLastList = idLista;
 
         // Referencia a la subcolección 'elementoslista' dentro de la lista específica
         const productosRef = collection(this.db, `listacompras/${idLista}/elementoslista`);
@@ -156,7 +160,6 @@ export class FirestoreService {
     }
   }
   
-  
   async obtenerProductosDeTodasLasListas() {
     try {
       // Referencia a la colección 'listacompras'
@@ -203,40 +206,37 @@ export class FirestoreService {
     }
   }
 
-  async agregarOActualizarProducto(idLista: string, producto: Producto) {
+  async agregarProductoAListaMasNueva(producto: Producto) {
+
     try {
-      // Referencia al documento de la lista
-      const listaRef = doc(this.db, 'listacompras', idLista);
+      producto.idLista = this.idLastList;
+      
+      const productosRef = collection(this.db, `listacompras/${this.idLastList}/elementoslista`);
+      const docRef = await addDoc(productosRef, producto);
 
-      // Verificar si la lista existe, si no, crearla
-      const listaDoc = await getDoc(listaRef);
-      if (!listaDoc.exists()) {
-        await setDoc(listaRef, {
-          fechaRegistro: new Date()
-        });
-        console.log('Lista creada automáticamente');
-      }
+      // Guardar el id generado automáticamente en el mismo documento
+      await updateDoc(docRef, {
+        id: docRef.id
+      });
 
-      // Si el producto ya tiene un id, actualizamos el documento existente
-      if (producto.id && producto.id.length > 0) {
-        const productoRef = doc(this.db, `listacompras/${idLista}/elementoslista/${producto.id}`);
-        await updateDoc(productoRef, { ...producto });
-        console.log(`Producto con ID ${producto.id} actualizado.`);
-        return producto.id;
-      }
-      // Si no tiene id, lo creamos como nuevo documento
-      else {
-        const productosRef = collection(this.db, `listacompras/${idLista}/elementoslista`);
-        const docRef = await addDoc(productosRef, producto);
+      console.log(`Producto agregado con nuevo ID: ${docRef.id}`);
 
-        // Guardar el id generado automáticamente en el mismo documento
-        await updateDoc(docRef, {
-          id: docRef.id
-        });
+      return docRef.id;
+    } catch (error) {
+      console.error("Error al agregar o actualizar el producto: ", error);
+      throw error;
+    }
+  }
 
-        console.log(`Producto agregado con nuevo ID: ${docRef.id}`);
-        return docRef.id;
-      }
+  async actualizarProducto(producto: Producto) {
+    try {
+    
+      const productoRef = doc(this.db, `listacompras/${this.idLastList}/elementoslista/${producto.id}`);
+      await updateDoc(productoRef, { ...producto });
+      console.log(`Producto con ID ${producto.id} actualizado.`);
+      
+      return producto.id;
+
     } catch (error) {
       console.error("Error al agregar o actualizar el producto: ", error);
       throw error;
